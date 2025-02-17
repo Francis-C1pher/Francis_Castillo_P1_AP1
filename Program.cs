@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -28,9 +31,9 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 
-var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
 
-builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
+
+
 
 
 
