@@ -1,6 +1,7 @@
+using Francis_Castillo_P1_AP1.DAL; // Se corrigió la referencia a DAL
 using Francis_Castillo_P1_AP1.Components;
-using Francis_Castillo_P1_AP1.Components.DAL;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,19 +23,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-
-
-
-
-
-
 
 app.Run();

@@ -6,9 +6,6 @@ namespace Francis_Castillo_P1_AP1.Components.Models;
 public class ParcialModelo
 {
 
-
-    public class Aportes
-    {
         [Key]
         public int AporteId { get; set; }
         [Required(ErrorMessage = "Este campo es requerido")]
@@ -26,7 +23,7 @@ public class ParcialModelo
         [Required(ErrorMessage = "Este campo es requerido")]
 
         public int AportesId { get; set; }
-    } 
+    
 }
         
        
