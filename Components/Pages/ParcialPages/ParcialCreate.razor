@@ -1,5 +1,68 @@
-﻿<h3>ParcialCreate</h3>
+﻿@page "/Aporte/Create"
+@using Francis_Castillo_P1_AP1.Services
+@using Francis_Castillo_P1_AP1.Components.Models
+@inject AportesService AportesService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Aporte</h3>
+
+<!-- Formulario para crear un nuevo aporte -->
+<EditForm Model="@nuevoAporte" OnValidSubmit="GuardarAporte" FormName="CrearAporteForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="persona" class="form-label">Persona</label>
+        <InputText id="persona" class="form-control" @bind-Value="nuevoAporte.Persona" />
+        <ValidationMessage For="@(() => nuevoAporte.Persona)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="observacion" class="form-label">Observación</label>
+        <InputText id="observacion" class="form-control" @bind-Value="nuevoAporte.Observacion" />
+        <ValidationMessage For="@(() => nuevoAporte.Observacion)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="monto" class="form-label">Monto</label>
+        <InputNumber id="monto" class="form-control" @bind-Value="nuevoAporte.Monto" />
+        <ValidationMessage For="@(() => nuevoAporte.Monto)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
 
 @code {
+    private ParcialModelo nuevoAporte = new();
 
+    // Método para guardar el aporte
+    private async Task GuardarAporte()
+    {
+        if (string.IsNullOrEmpty(nuevoAporte.Persona) || string.IsNullOrEmpty(nuevoAporte.Observacion) || nuevoAporte.Monto <= 0)
+        {
+            // Si los campos son inválidos, muestra un mensaje en consola
+            Console.WriteLine("Por favor, complete todos los campos correctamente.");
+            return;
+        }
+
+        try
+        {
+            // Llamar al servicio para guardar el nuevo aporte
+            var resultado = await AportesService.Guardar(nuevoAporte);
+
+            if (resultado)
+            {
+                // Si el aporte se guarda correctamente, redirige a la página principal
+                NavigationManager.NavigateTo("/Aporte/Index");
+            }
+            else
+            {
+                Console.WriteLine("Error al guardar el aporte.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
 }

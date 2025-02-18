@@ -1,5 +1,62 @@
-﻿<h3>ParcialIndex</h3>
+﻿@page "/Aporte/Index"
+
+@using Francis_Castillo_P1_AP1.Services
+@inject AportesService AportesService
+@using Francis_Castillo_P1_AP1.Components.Models
+@inject NavigationManager NavigationManager
+
+<h3>Aportes</h3>
+
+<div class="mb-3">
+     <h5 class="card-title">Aportes</h5>
+     <a href="/Aporte/Create" class="btn btn-primary"></a>
+                <span class="bi bi-plus-square mt-3"></span> Crear Aporte
+    
+</div>
+
+@if (aportes is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Persona</th>
+                <th>Observación</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aporte in aportes)
+            {
+                <tr>
+                    <td>@aporte.Persona</td>
+                    <td>@aporte.Observacion</td>
+                    <td>@aporte.Fecha.ToShortDateString()</td>
+                    <td>@aporte.Monto</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <h4>Total: @totalMontos</h4>
+}
 
 @code {
+    private List<ParcialModelo>? aportes;
+    private double totalMontos;
 
+    protected override async Task OnInitializedAsync()
+    {
+        aportes = await AportesService.Listar(a => true);
+        totalMontos = await AportesService.ObtenerTotalMontos();
+    }
+
+    // Método para redirigir a la página de creación
+    private void CrearAporte()
+    {
+        NavigationManager.NavigateTo("/Aporte/Create");
+    }
 }

@@ -1,0 +1,61 @@
+﻿@page "/Aporte/Delete/{AporteId:int}"
+@using Francis_Castillo_P1_AP1.Services
+@using Francis_Castillo_P1_AP1.Components.Models
+@inject AportesService AportesService
+@inject NavigationManager NavigationManager
+
+<h3>Eliminar Aporte</h3>
+
+@if (aporte == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <p>¿Está seguro de que desea eliminar el aporte de <strong>@aporte.Persona</strong> con observación "<strong>@aporte.Observacion</strong>"?</p>
+
+    <div class="mb-3">
+        <button class="btn btn-danger" @onclick="EliminarAporte">Eliminar</button>
+        <button class="btn btn-secondary" @onclick="Volver">Volver</button>
+    </div>
+}
+
+@code {
+    [Parameter] public int AporteId { get; set; }
+    private ParcialModelo? aporte;
+
+    protected override async Task OnInitializedAsync()
+    {
+      
+        aporte = await AportesService.Buscar(AporteId);
+    }
+
+    private async Task EliminarAporte()
+    {
+        try
+        {
+            var resultado = await AportesService.Eliminar(AporteId);
+            if (resultado)
+            {
+               
+                NavigationManager.NavigateTo("/Aporte/Index");
+            }
+            else
+            {
+              
+                Console.WriteLine("Error al eliminar el aporte");
+            }
+        }
+        catch (Exception ex)
+        {
+           
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private void Volver()
+    {
+      
+        NavigationManager.NavigateTo("/Aporte/Index");
+    }
+}

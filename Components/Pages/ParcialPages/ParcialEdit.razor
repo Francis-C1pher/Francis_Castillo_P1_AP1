@@ -1,0 +1,79 @@
+﻿@page "/Aporte/Edit/{AporteId:int}"
+@using Francis_Castillo_P1_AP1.Services
+@using Francis_Castillo_P1_AP1.Components.Models
+@inject AportesService AportesService
+@inject NavigationManager NavigationManager
+
+<h3>Editar Aporte</h3>
+
+@if (aporte == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="@aporte" OnValidSubmit="GuardarAporte">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="persona" class="form-label">Persona</label>
+            <InputText id="persona" class="form-control" @bind-Value="aporte.Persona" />
+        </div>
+
+        <div class="mb-3">
+            <label for="observacion" class="form-label">Observación</label>
+            <InputText id="observacion" class="form-control" @bind-Value="aporte.Observacion" />
+        </div>
+
+        <div class="mb-3">
+            <label for="monto" class="form-label">Monto</label>
+            <InputNumber id="monto" class="form-control" @bind-Value="aporte.Monto" />
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-secondary" @onclick="Volver">Volver</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int AporteId { get; set; }
+    private ParcialModelo? aporte;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Obtener el aporte a editar con base en el AporteId
+        aporte = await AportesService.Buscar(AporteId);
+    }
+
+    private async Task GuardarAporte()
+    {
+        try
+        {
+            var resultado = await AportesService.Guardar(aporte!);
+            if (resultado)
+            {
+                // Si el aporte fue guardado correctamente, navegar a la página de listado
+                NavigationManager.NavigateTo("/Aporte/Index");
+            }
+            else
+            {
+                // Si hubo un error al guardar, puedes mostrar un mensaje (por ejemplo)
+                Console.WriteLine("Error al guardar el aporte");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Manejo de excepciones
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private void Volver()
+    {
+        // Redirige al usuario a la página de lista de aportes
+        NavigationManager.NavigateTo("/Aporte/Index");
+    }
+}
