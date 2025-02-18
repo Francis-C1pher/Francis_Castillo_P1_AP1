@@ -1,5 +1,85 @@
-﻿<h3>ParcialIndex</h3>
+﻿@page "/Aporte/Index"
+
+@inject AportesService AportesService
+@inject NavigationManager NavigationManager
+
+<h3>Aportes</h3>
+
+<div class="card-header row">
+    <div class="col-md-4">
+        <label>Desde: </label>
+        <InputDate @bind-Value="Desde" class="form-control"></InputDate>
+    </div>
+    <div class="col-md-4">
+        <label>Hasta: </label>
+        <InputDate @bind-Value="Hasta" class="form-control"></InputDate>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-dark" @onclick="Filtrar">Filtrar</button>
+    </div>
+</div>
+
+<div class="card-header space-between">
+    <a href="/Aporte/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear Aporte</a>
+</div>
+
+@if (aportes is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table align-content-center">
+        <thead>
+            <tr>
+                <th>Persona</th>
+                <th>Observación</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aporte in aportes)
+            {
+                <tr>
+                    <td>@aporte.Persona</td>
+                    <td>@aporte.Observacion</td>
+                    <td>@aporte.Fecha.ToShortDateString()</td>
+                    <td>@aporte.Monto</td>
+                    <td class="text-center">
+                        <a href="/Aporte/Edit/@aporte.AporteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                    </td>
+                    <td class="text-center">
+                        <a href="/Aporte/Delete/@aporte.AporteId" class="btn btn-outline-danger bi bi-trash3"></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <h4>Total: @totalMontos</h4>
+}
 
 @code {
+    private List<ParcialModelo>? aportes;
+    private double totalMontos;
+    public DateTime Desde { get; set; } = DateTime.Now.AddMonths(-1);
+    public DateTime Hasta { get; set; } = DateTime.Now;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarAportes();
+    }
+
+    private async Task CargarAportes()
+    {
+        aportes = await AportesService.Listar(a => a.Fecha >= Desde && a.Fecha <= Hasta);
+        totalMontos = aportes.Sum(a => a.Monto);
+    }
+
+    private async Task Filtrar()
+    {
+        await CargarAportes();
+    }
 }
