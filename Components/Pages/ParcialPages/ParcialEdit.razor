@@ -1,79 +1,62 @@
 ﻿@page "/Aporte/Edit/{AporteId:int}"
-@using Francis_Castillo_P1_AP1.Services
-@using Francis_Castillo_P1_AP1.Components.Models
 @inject AportesService AportesService
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer 
 
 <h3>Editar Aporte</h3>
 
-@if (aporte == null)
-{
-    <p>Cargando...</p>
-}
-else
-{
-    <EditForm Model="@aporte" OnValidSubmit="GuardarAporte">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+<EditForm Model="Aporte" OnValidSubmit="GuardarAporte">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-        <div class="mb-3">
-            <label for="persona" class="form-label">Persona</label>
-            <InputText id="persona" class="form-control" @bind-Value="aporte.Persona" />
-        </div>
+    <div class="mb-3">
+        <label for="persona" class="form-label">Persona</label>
+        <InputText id="persona" class="form-control" @bind-Value="Aporte.Persona" />
+        <ValidationMessage For="@(() => Aporte.Persona)" />
+    </div>
 
-        <div class="mb-3">
-            <label for="observacion" class="form-label">Observación</label>
-            <InputText id="observacion" class="form-control" @bind-Value="aporte.Observacion" />
-        </div>
+    <div class="mb-3">
+        <label for="observacion" class="form-label">Observación</label>
+        <InputText id="observacion" class="form-control" @bind-Value="Aporte.Observacion" />
+        <ValidationMessage For="@(() => Aporte.Observacion)" />
+    </div>
 
-        <div class="mb-3">
-            <label for="monto" class="form-label">Monto</label>
-            <InputNumber id="monto" class="form-control" @bind-Value="aporte.Monto" />
-        </div>
+    <div class="mb-3">
+        <label for="monto" class="form-label">Monto</label>
+        <InputNumber id="monto" class="form-control" @bind-Value="Aporte.Monto" />
+        <ValidationMessage For="@(() => Aporte.Monto)" />
+    </div>
 
-        <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <button type="button" class="btn btn-secondary" @onclick="Volver">Volver</button>
-        </div>
-    </EditForm>
-}
+    <button class="btn btn-primary" type="submit">Guardar</button>
+</EditForm>
 
 @code {
-    [Parameter] public int AporteId { get; set; }
-    private ParcialModelo? aporte;
+    [Parameter] 
+    public int AporteId { get; set; }
+    private ParcialModelo? Aporte = new();
 
     protected override async Task OnInitializedAsync()
     {
-        // Obtener el aporte a editar con base en el AporteId
-        aporte = await AportesService.Buscar(AporteId);
+        Aporte = await AportesService.Buscar(AporteId);
     }
 
     private async Task GuardarAporte()
     {
-        try
+        if (Aporte.Persona != null && Aporte.Observacion != null && Aporte.Monto > 0)
         {
-            var resultado = await AportesService.Guardar(aporte!);
+            // Llamar al servicio para guardar el nuevo aporte
+            var resultado = await AportesService.Guardar(Aporte);
+
             if (resultado)
             {
-                // Si el aporte fue guardado correctamente, navegar a la página de listado
+                // Redirigir a la página principal después de guardar
                 NavigationManager.NavigateTo("/Aporte/Index");
             }
             else
             {
-                // Si hubo un error al guardar, puedes mostrar un mensaje (por ejemplo)
-                Console.WriteLine("Error al guardar el aporte");
+                // Si la operación falla, puedes mostrar un mensaje o manejar el error aquí
+                // Ejemplo: Mostrar un error en la UI
             }
         }
-        catch (Exception ex)
-        {
-            // Manejo de excepciones
-            Console.WriteLine($"Error: {ex.Message}");
-        }
-    }
-
-    private void Volver()
-    {
-        // Redirige al usuario a la página de lista de aportes
-        NavigationManager.NavigateTo("/Aporte/Index");
     }
 }
